@@ -1,47 +1,40 @@
 from Pyfhel import Pyfhel, PyPtxt, PyCtxt
-import numpy as np
 
-# Initialize Pyfhel object
+# Initialize and generate keys
 HE = Pyfhel()
-# Key generation with large coefficient modulus for more complex computations
-HE.contextGen(p=65537, m=8192, flagBatching=True)  # Enable batching
 HE.keyGen()
-HE.relinKeyGen()
-HE.rotateKeyGen()
 
-def encrypt_card_number(card_number):
-    # Convert the credit card number to a list of integers
-    cc_digits = [int(d) for d in card_number]
-    # Encrypt the number as a whole, assuming batching is enabled
-    plaintext = PyPtxt(cc_digits, HE)
-    return HE.encrypt(plaintext)
+cc_number = input("Enter your credit card number: ")
 
-def luhns_algorithm(HE, encrypted_number):
-    # Decrypt the encrypted number for Luhn's Algorithm
-    decrypted_number = HE.decrypt(encrypted_number)
-    cc_digits = [int(d) for d in str(decrypted_number)]
-    cc_digits.reverse()
-    for i in range(len(cc_digits)):
-        if i % 2 == 1:
-            cc_digits[i] *= 2
-            if cc_digits[i] > 9:
-                cc_digits[i] -= 9
-    return sum(cc_digits) % 10 == 0
+print("Your public key is: " + str(HE.pubKey))
+print("Your secret key is: " + str(HE.secKey))
+print("Your relin key is: " + str(HE.relinKey))
+print("Your galois key is: " + str(HE.galoisKey))
+print("Your key switch matrix is: " + str(HE.keySwitchMatrix))
 
-def main():
-    card_number = input("Enter your credit card number: ")
-    encrypted_number = encrypt_card_number(card_number)
 
-    # Output the encrypted number and keys
-    print("Encrypted credit card number:", encrypted_number.to_bytes().hex())
-    print("Public key:", HE.getpublicKey().to_bytes().hex())
-    print("Secret key:", HE.getsecretKey().to_bytes().hex())
-    print("Relin key:", HE.getrelinKey().to_bytes().hex())
-    print("Rotate key:", HE.getrotateKey().to_bytes().hex())
+# Convert the credit card number to a list of integers
+cc_digits = [int(d) for d in cc_number]
+# Create a plaintext object from the credit card digits
+cc_ptxt = PyPtxt(cc_digits)
 
-    # Perform Luhn's Algorithm on the encrypted number
-    is_valid = luhns_algorithm(HE, encrypted_number)
-    print("The credit card number is valid!" if is_valid else "The credit card number is invalid.")
+# Encrypt the plaintext object
+cc_enc = HE.encrypt(cc_ptxt)
 
-if __name__ == "__main__":
-    main()
+# Perform Luhn's Algorithm on the encrypted data
+# it is done by reversing the list and multiplying every other digit by 2 then subtracting 9 to numbers over 9 
+cc_enc_list = cc_enc.toList()
+cc_enc_list.reverse()
+for i in range(len(cc_enc_list)):
+    if i % 2 == 1:
+        cc_enc_list[i] *= 2
+        if cc_enc_list[i] > 9:
+            cc_enc_list[i] -= 9
+cc_enc_sum = sum(cc_enc_list)
+
+# Decrypt the result and check if its valid
+cc_sum = HE.decrypt(cc_enc_sum)
+if cc_sum % 10 == 0:
+    print("Credit card number is valid!")
+else:
+    print("Credit card number is invalid.")
