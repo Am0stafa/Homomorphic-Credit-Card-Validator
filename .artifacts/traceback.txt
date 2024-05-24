@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/concrete/fhe/compilation/compiler.py", line 456, in compile
+    self._evaluate("Compiling", inputset)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/concrete/fhe/compilation/compiler.py", line 301, in _evaluate
+    self._trace(first_sample)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/concrete/fhe/compilation/compiler.py", line 220, in _trace
+    self.graph = Tracer.trace(self.function, parameters)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/concrete/fhe/tracing/tracer.py", line 85, in trace
+    output_tracers: Any = function(**arguments)
+  File "/Users/abdomostafa/Homomorphic-Credit-Card-Validator/homo.py", line 12, in luhn_algorithm
+    if doubled_digit > 9:
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/concrete/fhe/tracing/tracer.py", line 193, in __bool__
+    raise RuntimeError(message)
+RuntimeError: Branching within circuits is not possible

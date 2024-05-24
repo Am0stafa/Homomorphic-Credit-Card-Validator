@@ -1,0 +1,14 @@
+@fhe.compiler({"x": "encrypted"})
+def luhn_algorithm(x):
+    n_digits = len(x)
+    sum_digits = 0
+    for i in range(n_digits):
+        digit = x[n_digits - 1 - i]
+        if i % 2 == 1:
+            doubled_digit = digit * 2
+            if doubled_digit > 9:
+                doubled_digit -= 9
+            sum_digits += doubled_digit
+        else:
+            sum_digits += digit
+    return sum_digits % 10 == 0
